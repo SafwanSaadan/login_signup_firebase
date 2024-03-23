@@ -1,10 +1,11 @@
+// ignore_for_file: avoid_print
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../../components/already_have_an_account_acheck.dart';
 import '../../../constants.dart';
 import '../../Signup/signup_screen.dart';
-import '../../auth/auth.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({
@@ -19,12 +20,23 @@ class _LoginFormState extends State<LoginForm> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  // final _formKey = GlobalKey<FormState>();
-
   Future singIn() async {
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim());
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim());
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        print('No user found for that email.');
+      } else if (e.code == 'wrong-password') {
+        print('Wrong password provided for that user.');
+      } else {
+        // ignore: use_build_context_synchronously
+        Navigator.of(context).pushReplacementNamed("auth");
+      }
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override
@@ -51,6 +63,14 @@ class _LoginFormState extends State<LoginForm> {
             ),
           ),
         ),
+
+        // defaultFormField(
+        //     controller: TextEditingController(),
+        //     type: TextInputType.emailAddress,
+        //     validate: "Please enter a valid email address",
+        //     label: "email",
+        //     prefix: Icons.email,
+        //   ),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: defaultPadding),
           child: TextFormField(
@@ -66,18 +86,25 @@ class _LoginFormState extends State<LoginForm> {
               ),
             ),
           ),
+
+          // defaultFormField(
+          //     controller: TextEditingController(),
+          //     type: TextInputType.emailAddress,
+          //     validate: "Please enter a valid password address",
+          //     label: "password",
+          //     prefix: Icons.lock,
+          //     suffix: Icons.remove_red_eye,
+          //     isPassword: true,
+          //   ),
         ),
         const SizedBox(height: defaultPadding),
         Hero(
           tag: "login_btn",
           child: ElevatedButton(
-            onPressed: () {
-              singIn;
-              const Auth();
-              // ignore: avoid_print
-              print('Email: ${_emailController.text.trim()}');
-              // ignore: avoid_print
-              print('Password: ${_passwordController.text.trim()}');
+            onPressed: () async {
+              await singIn();
+              // print('Email: ${_emailController.text.trim()}');
+              // print('Password: ${_passwordController.text.trim()}');
             },
             child: Text(
               "Login".toUpperCase(),
@@ -88,7 +115,6 @@ class _LoginFormState extends State<LoginForm> {
         const SizedBox(height: defaultPadding),
         AlreadyHaveAnAccountCheck(
           press: () {
-            singIn;
             Navigator.push(
               context,
               MaterialPageRoute(

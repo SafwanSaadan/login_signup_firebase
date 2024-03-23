@@ -1,5 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+
+import '../../constants.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,12 +18,41 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Text("مرحباً بك"),
-          Text("$user"),
-        ],
+      body: Container(
+        color: Colors.white,
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: defaultPadding),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              "مرحباً بك",
+              style: TextStyle(
+                  color: Colors.blue,
+                  fontFamily: GoogleSignIn.kNetworkError,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(
+              height: defaultPadding,
+            ),
+            Text("${user.email}"),
+            const SizedBox(
+              height: defaultPadding,
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                await FirebaseAuth.instance.signOut();
+              },
+              child: Container(
+                child: Text(
+                  "Sign out".toUpperCase(),
+                  style: const TextStyle(color: Colors.white),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
