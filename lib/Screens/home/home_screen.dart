@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../constants.dart';
@@ -44,11 +43,9 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () async {
                 await FirebaseAuth.instance.signOut();
               },
-              child: Container(
-                child: Text(
-                  "Sign out".toUpperCase(),
-                  style: const TextStyle(color: Colors.white),
-                ),
+              child: Text(
+                "Sign out".toUpperCase(),
+                style: const TextStyle(color: Colors.white),
               ),
             ),
           ],
